@@ -1,0 +1,19 @@
+{
+    "tailwindCSS.includeLanguages": {
+        "plaintext": "html",
+        "javascript": "javascript",
+        "javascriptreact": "javascript",
+        "typescript": "typescript",
+        "typescriptreact": "typescript"
+    },
+    "editor.quickSuggestions": {
+        "strings": true
+    },
+    "tailwindCSS.experimental.configFile": {
+        "example/tw/componentA.css": ["example/views/componentA.cshtml"],
+        "example/tw/componentB.css": ["example/views/componentB.liquid"],
+        "example/tw/critical.css": ["example/views/header.html"],
+        "example/tw/theme.css": ["example/views/footer.html"],
+    },
+    "css.validate": false
+}

@@ -1,0 +1,69 @@
+/*! tailwindcss v4.1.5 | MIT License | https://tailwindcss.com */
+@layer base {
+  html, :host {
+    font-family: var(--default-font-family, var(--font-sans, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"));
+    font-feature-settings: var(--default-font-feature-settings, initial);
+    font-variation-settings: var(--default-font-variation-settings, initial);
+  }
+  code, kbd, samp, pre {
+    font-family: var(--default-mono-font-family, var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace));
+    font-feature-settings: var(--default-mono-font-feature-settings, initial);
+    font-variation-settings: var(--default-mono-font-variation-settings, initial);
+  }
+}
+@layer utilities {
+  .text-2xl {
+    font-size: var(--text-2xl, 1.5rem);
+    line-height: var(--tw-leading, var(--text-2xl--line-height, calc(2 / 1.5)));
+  }
+  .text-base {
+    font-size: var(--text-base, 1rem);
+    line-height: var(--tw-leading, var(--text-base--line-height, calc(1.5 / 1)));
+  }
+  .text-lg {
+    font-size: var(--text-lg, 1.125rem);
+    line-height: var(--tw-leading, var(--text-lg--line-height, calc(1.75 / 1.125)));
+  }
+  .text-sm {
+    font-size: var(--text-sm, 0.875rem);
+    line-height: var(--tw-leading, var(--text-sm--line-height, calc(1.25 / 0.875)));
+  }
+  .text-xl {
+    font-size: var(--text-xl, 1.25rem);
+    line-height: var(--tw-leading, var(--text-xl--line-height, calc(1.75 / 1.25)));
+  }
+}
+@layer utilities {
+  .primary-button {
+    border-radius: 0.25rem;
+    background-color: var(--color-blue-500, oklch(62.3% 0.214 259.815));
+    padding-inline: calc(var(--spacing, 0.25rem) * 4);
+    padding-block: calc(var(--spacing, 0.25rem) * 2);
+    --tw-font-weight: var(--font-weight-bold, 700);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--color-white, #fff);
+  }
+  .secondary-button {
+    border-radius: 0.25rem;
+    background-color: var(--color-red-500, oklch(63.7% 0.237 25.331));
+    padding-inline: calc(var(--spacing, 0.25rem) * 4);
+    padding-block: calc(var(--spacing, 0.25rem) * 2);
+    --tw-font-weight: var(--font-weight-bold, 700);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--color-white, #fff);
+  }
+}
+@property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@layer properties {
+  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
+    *, ::before, ::after, ::backdrop {
+      --tw-font-weight: initial;
+    }
+  }
+}
+    

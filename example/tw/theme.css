@@ -1,0 +1,18 @@
+@import "tailwindcss" source(none);
+
+@source inline("text-{sm,lg,xl,2xl,base}");
+
+@reference "./critical.css";
+
+@utility primary-button {@apply bg-blue-500 text-white font-bold py-2 px-4 rounded;}
+@utility secondary-button {@apply bg-red-500 text-white font-bold py-2 px-4 rounded;}
+
+@layer utilities{
+    .primary-button {
+        @apply primary-button;
+    }
+
+    .secondary-button {
+        @apply secondary-button;
+    }
+}
