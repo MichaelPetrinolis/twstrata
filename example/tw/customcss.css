@@ -1,0 +1,9 @@
+@import "tailwindcss" source(none);
+
+@reference "./theme.css";
+
+@layer components {
+    .custom-button {
+        @apply bg-blue-100;
+    }
+}

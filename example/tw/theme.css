@@ -4,8 +4,10 @@
 
 @reference "./critical.css";
 
-@utility primary-button {@apply bg-blue-500 text-white font-bold py-2 px-4 rounded;}
-@utility secondary-button {@apply bg-red-500 text-white font-bold py-2 px-4 rounded;}
+@utility primary-button {@apply bg-blue-500 text-white font-bold py-2 px-4 rounded}
+@utility secondary-button {@apply bg-red-500 text-white font-bold py-2 px-4 rounded}
+@utility header {@apply bg-blue-100}  
+
 
 @layer utilities{
     .primary-button {
@@ -14,5 +16,10 @@
 
     .secondary-button {
         @apply secondary-button;
+    }
+}
+@layer components {
+    .header {
+        @apply header;
     }
 }

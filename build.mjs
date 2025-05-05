@@ -62,7 +62,7 @@ if (task === "watch") {
 async function buildAll() {
     const startTime = performance.now();
 
-    filesMap = await getFileMaps();
+    filesMap = await getFileMap();
 
     if (!filesMap[criticalCSSName]) {
         filesMap[criticalCSSName] = [];
@@ -111,15 +111,27 @@ async function buildAll() {
     console.log(chalk.green("Build time: ", prettyMilliseconds(endTime - startTime))); // TODO: display in minutes or hours if it's a long build
 }
 
-async function getFileMaps() {
-    console.log(chalk.blue("Loading fileMaps.mjs..."));
+async function getFileMap() {
+    console.log(chalk.blue("Loading fileMap..."));
     console.log(chalk.blue("Views: ", views));
 
-    const viewFiles = await fg(views, { onlyFiles: true });
-    if (viewFiles.length === 0) {
-        return {};
-    }
     const filesMap = {};
+
+    const sources = path.normalize(path.join(process.cwd(), sourceDir));
+
+    try {
+        var files = await fs.readdir(sources);
+        files.forEach((file) => {
+            const fileName = path.basename(file, '.css').toLowerCase();
+            if (fileName !== globalCSSName && fileName !== criticalCSSName) {
+                filesMap[fileName] = [];
+            }
+        });
+    } catch (err) {
+        console.error(chalk.red(`Error reading source directory: ${sources}`), err);
+    }
+
+    const viewFiles = await fg(views, { onlyFiles: true });
 
     // Process each file to find custom CSS references
     await Promise.all(
@@ -158,11 +170,11 @@ async function getFileMaps() {
         })
     );
 
-    return filesMap;
-}
+    if (Object.keys(filesMap).length === 0) {
+        console.log(chalk.red("No fileMap in the configuration"));
+    }
 
-// Function to create a map of CSS files with their associated source files
-async function createFilesMap(files) {
+    return filesMap;
 }
 
 async function createSourceCSSFileIfNotExist(filePath) {
@@ -171,13 +183,15 @@ async function createSourceCSSFileIfNotExist(filePath) {
             console.log(chalk.yellow(`File ${filePath} does not exist. Creating a new one.`));
             await fs.mkdir(path.dirname(filePath), { recursive: true });
 
-            let fileContent = '@import "tailwind" source(none);\r\n';
+            let fileContent = '@import "tailwindcss" source(none);\r\n';
             let cssName = path.basename(filePath, '.css');
+
             if (cssName === globalCSSName) {
-                fileContent += `@reference "${criticalCSSName}.css"\r\n`;
+                fileContent += `@reference "./${criticalCSSName}.css";\r\n`;
             } else if (path.basename(filePath, '.css') != criticalCSSName) {
                 fileContent += `@reference "${globalCSSName}.css"\r\n`;
             }
+
             await fs.writeFile(filePath, fileContent, "utf-8");
         }
     } catch (err) {

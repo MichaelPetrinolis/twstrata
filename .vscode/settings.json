@@ -1,19 +1,21 @@
 {
-    "tailwindCSS.includeLanguages": {
-        "plaintext": "html",
-        "javascript": "javascript",
-        "javascriptreact": "javascript",
-        "typescript": "typescript",
-        "typescriptreact": "typescript"
+    "[tailwindcss]": {
+        "editor.defaultFormatter": "vscode.css-language-features"
+    },
+    "[liquid]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
     },
     "editor.quickSuggestions": {
-        "strings": true
+        "strings": "on"
+    },
+    "files.associations": {
+        "*.css": "tailwindcss"
     },
     "tailwindCSS.experimental.configFile": {
-        "example/tw/componentA.css": ["example/views/componentA.cshtml"],
-        "example/tw/componentB.css": ["example/views/componentB.liquid"],
+        "example/tw/customcss.css": "example/tw/customcss.css",
+        "example/tw/componenta.css": ["example/views/componentA.cshtml"],
+        "example/tw/componentb.css": ["example/views/componentB.liquid"],
         "example/tw/critical.css": ["example/views/header.html"],
         "example/tw/theme.css": ["example/views/footer.html"],
-    },
-    "css.validate": false
+    }
 }

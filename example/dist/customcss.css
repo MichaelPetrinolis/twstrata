@@ -1,0 +1,9 @@
+/*! tailwindcss v4.1.5 | MIT License | https://tailwindcss.com */
+@layer components {
+  .custom-button {
+    background-color: var(--color-blue-100, oklch(93.2% 0.032 255.585));
+  }
+}
+
+    
+    
