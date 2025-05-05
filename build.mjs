@@ -128,15 +128,22 @@ async function getFileMap() {
     const sources = path.normalize(path.join(process.cwd(), sourceDir));
 
     try {
-        var files = await fs.readdir(sources);
-        files.forEach((file) => {
-            const fileName = path.basename(file, '.css').toLowerCase();
-            if (fileName !== globalCSSName && fileName !== criticalCSSName) {
-                filesMap[fileName] = [];
+        if ((await fs.stat(sources)).isDirectory) {
+            try {
+                var files = await fs.readdir(sources);
+                files.forEach((file) => {
+                    const fileName = path.basename(file, '.css').toLowerCase();
+                    if (fileName !== globalCSSName && fileName !== criticalCSSName) {
+                        filesMap[fileName] = [];
+                    }
+                });
             }
-        });
+            catch (err) {
+                console.error(chalk.red(`Error reading source directory: ${sources}`), err);
+                process.exit(1);
+            }
+        }
     } catch (err) {
-        console.error(chalk.red(`Error reading source directory: ${sources}`), err);
     }
 
     const viewFiles = await fg(views, { onlyFiles: true });
@@ -190,7 +197,7 @@ async function getFileMap() {
 
 async function createSourceCSSFileIfNotExist(filePath) {
     try {
-        if (!await fs.statfs(filePath).then(() => true).catch(() => false)) {
+        if (!await fs.stat(filePath).then(() => true).catch(() => false)) {
             console.log(chalk.yellow(`File ${filePath} does not exist. Creating a new one.`));
             await fs.mkdir(path.dirname(filePath), { recursive: true });
 

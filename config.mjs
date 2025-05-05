@@ -18,7 +18,10 @@ const isWin = process.platform === "win32";
 let pathToFile = path.join(process.cwd(), "twstrata.config.mjs");
 
 /** @type {UserProvidedConfig} */
-let userProvidedConfig = await import(pathToFileURL(pathToFile).href);
+let userProvidedConfig;
+
+try {
+userProvidedConfig = await import(pathToFileURL(pathToFile).href);
 
 if (isWin) {
     console.log(chalk.blue("Loading twstrata.config.mjs..."), pathToFileURL(pathToFile).href);
@@ -28,6 +31,10 @@ else {
     console.log(chalk.blue("Loading twstrata.config.mjs..."), pathToFile);
     userProvidedConfig = await import(pathToFile);
 }
+} catch (e) {
+    console.log(chalk.red("No twstrata.config.mjs file found. Using defaults."));
+}
+
 
 const defaultSourceDir = "tw";
 const defaultGlobalCSSName = "theme";
