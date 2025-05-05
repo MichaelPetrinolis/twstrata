@@ -12,10 +12,30 @@
         "*.css": "tailwindcss"
     },
     "tailwindCSS.experimental.configFile": {
-        "example/tw/customcss.css": "example/tw/customcss.css",
-        "example/tw/componenta.css": ["example/views/componentA.cshtml"],
-        "example/tw/componentb.css": ["example/views/componentB.liquid"],
-        "example/tw/critical.css": ["example/views/header.html"],
-        "example/tw/theme.css": ["example/views/footer.html"],
+        "theme": [
+            "example/tw/theme.css",
+            "example/views/footer.html"
+        ],
+        "critical": [
+            "example/tw/critical.css",
+            "example/views/header.html"
+        ],
+        "componenta": [
+            "example/tw/componenta.css"
+        ],
+        "componentb": [
+            "example/tw/componentb.css"
+        ],
+        "customcss": [
+            "example/tw/customcss.css"
+        ],
+        "ComponentA": [
+            "example/tw/ComponentA.css",
+            "example/views/componentA.cshtml"
+        ],
+        "ComponentB": [
+            "example/tw/ComponentB.css",
+            "example/views/componentB.liquid"
+        ]
     }
 }

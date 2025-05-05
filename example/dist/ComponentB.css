@@ -1,2 +1,13 @@
 /*! tailwindcss v4.1.5 | MIT License | https://tailwindcss.com */
+@layer components {
+  .componentb-button {
+    border-radius: 0.25rem;
+    background-color: var(--color-blue-500, oklch(62.3% 0.214 259.815));
+    padding-inline: calc(var(--spacing, 0.25rem) * 4);
+    padding-block: calc(var(--spacing, 0.25rem) * 2);
+    --tw-font-weight: var(--font-weight-bold, 700);
+    font-weight: var(--font-weight-bold, 700);
+    color: var(--color-white, #fff);
+  }
+}
     

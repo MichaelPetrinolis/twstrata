@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 // This script is used to build CSS files based on the source files and their references.
 // It uses PostCSS with Tailwind CSS and Autoprefixer to process the CSS files.
-import { fileURLToPath } from "node:url";
 import parseArgs from "minimist";
 import path from "path";
 import chalk from "chalk";
@@ -12,11 +11,9 @@ import tailwindcss from "@tailwindcss/postcss";
 import autoprefixer from "autoprefixer";
 import prettyMilliseconds from 'pretty-ms';
 import watch from "node-watch";
+import * as fsSync from "fs";
 
 import config from "./config.mjs";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const __workDir = process.cwd();
 
 let parsedArgs = parseArgs(process.argv.slice(2));
@@ -53,7 +50,15 @@ if (task === "watch") {
 
     console.log(chalk.green(`Watching for changes in: ${sourceDir} and current view files.`));
     console.log(chalk.bgBlue.white(`If you add any files to the views, you need to restart the watch process.`));
+} else if (task === "updateVSCodeSettings") {
+    console.log(chalk.green("Updating tailwindCSS VSCode intelisense settings..."));
+    await updateVSCodeSettings();
 } else {
+    if (task != "build" && task != undefined) {
+        console.warn(chalk.red("Unknown command: " + task));
+        process.exit(1);
+    }
+    console.log(chalk.green("Running build command..."));
     // Run the build process for non-watch tasks
     await buildAll();
 }
@@ -115,7 +120,10 @@ async function getFileMap() {
     console.log(chalk.blue("Loading fileMap..."));
     console.log(chalk.blue("Views: ", views));
 
-    const filesMap = {};
+    const filesMap = {
+        [globalCSSName]: [],
+        [criticalCSSName]: [],
+    };
 
     const sources = path.normalize(path.join(process.cwd(), sourceDir));
 
@@ -161,9 +169,6 @@ async function getFileMap() {
                 const currentViews = filesMap[sourceFile] || [];
                 currentViews.push(path.normalize(path.join(process.cwd(), file)));
                 filesMap[sourceFile] = currentViews;
-
-                const sourceCSSPath = path.normalize(path.join(sourceDir, sourceFile + ".css"));
-                await createSourceCSSFileIfNotExist(sourceCSSPath);
             } catch (err) {
                 console.error(`Error reading file ${file}:`, err);
             }
@@ -174,12 +179,18 @@ async function getFileMap() {
         console.log(chalk.red("No fileMap in the configuration"));
     }
 
+
+    await Promise.all(Object.keys(filesMap).map(async (key) => {
+        const sourceCSSPath = path.normalize(path.join(sourceDir, key + ".css"));
+        await createSourceCSSFileIfNotExist(sourceCSSPath);
+    }));
+
     return filesMap;
 }
 
 async function createSourceCSSFileIfNotExist(filePath) {
     try {
-        if (!await fs.stat(filePath).then(() => true).catch(() => false)) {
+        if (!await fs.statfs(filePath).then(() => true).catch(() => false)) {
             console.log(chalk.yellow(`File ${filePath} does not exist. Creating a new one.`));
             await fs.mkdir(path.dirname(filePath), { recursive: true });
 
@@ -343,4 +354,67 @@ function removeDuplicateRules(targetRoot, layoutPaths) {
 
     // Start pruning from the root
     pruneEmpty(targetRoot);
+}
+
+// Persist a JSON object into .vscode/.settings in the nearest parent directory
+async function updateVSCodeSettings() {
+    let dir = process.cwd();
+    const root = path.parse(dir).root;
+    let found = false;
+    let settingsPath = null;
+    let settings = null;
+    const sourceDir = config('sourceDir');
+
+    while (true) {
+        const vscodeDir = path.join(dir, ".vscode");
+        settingsPath = path.join(vscodeDir, "settings.json");
+        if (fsSync.existsSync(vscodeDir)) {
+            found = true;
+        }
+        if (dir === root || found) break;
+        dir = path.dirname(dir);
+    }
+    if (!found) {
+        settings = {};
+        const vscodeDir = path.join(process.cwd(), ".vscode");
+        await fs.mkdir(vscodeDir, { recursive: true });
+        settingsPath = path.join(vscodeDir, "settings.json");
+    } else {
+        try {
+            settings = JSON.parse(await fs.readFile(settingsPath, "utf-8"));
+        } catch (err) {
+            console.error(chalk.red(`Error reading settings file: ${settingsPath}`), err);
+            process.exit(1);
+        }
+    }
+
+    // If not found, create in current working directory
+    filesMap = await getFileMap();
+
+    const configFile = {};
+    Object.keys(filesMap).forEach(key => {
+        const relativePath = path.dirname(path.dirname(settingsPath));
+        const cssFile = `${path.posix.normalize((path.posix.join(path.basename(__workDir), sourceDir, path.basename(key) + ".css")))}`;
+        let views = filesMap[key];
+
+        if (Array.isArray(views) && views.length > 0) {
+            views = filesMap[key].map(file => {
+                let filePath = file.replaceAll(path.win32.sep, path.posix.sep);
+                filePath = path.normalize(path.join(path.relative(relativePath, file)));
+                return filePath.replaceAll(path.win32.sep, path.posix.sep);
+            });
+        } else {
+            views = [];
+        }
+
+        configFile[key] = [cssFile, ...views];
+    });
+
+    const configuration = {
+        ["tailwindCSS.experimental.configFile"]: configFile
+    };
+
+    Object.assign(settings, configuration);
+    await fs.writeFile(settingsPath, JSON.stringify(settings, null, 4), "utf-8");
+    console.log(chalk.green(`Updated settings file: ${settingsPath}`));
 }

@@ -15,17 +15,17 @@ import process from "node:process";
  */
 
 const isWin = process.platform === "win32";
-let pathToFile = path.join(process.cwd(), "build.config.mjs");
+let pathToFile = path.join(process.cwd(), "twstrata.config.mjs");
 
 /** @type {UserProvidedConfig} */
 let userProvidedConfig = await import(pathToFileURL(pathToFile).href);
 
 if (isWin) {
-    console.log(chalk.blue("Loading build.config.mjs..."), pathToFileURL(pathToFile).href);
-    userProvidedConfig = await import(pathToFileURL(path.join(process.cwd(), "build.config.mjs")).href);
+    console.log(chalk.blue("Loading twstrata.config.mjs..."), pathToFileURL(pathToFile).href);
+    userProvidedConfig = await import(pathToFileURL(path.join(process.cwd(), "twstrata.config.mjs")).href);
 }
 else {
-    console.log(chalk.blue("Loading build.config.mjs..."), pathToFile);
+    console.log(chalk.blue("Loading twstrata.config.mjs..."), pathToFile);
     userProvidedConfig = await import(pathToFile);
 }
 
