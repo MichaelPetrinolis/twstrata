@@ -21,16 +21,16 @@ let pathToFile = path.join(process.cwd(), "twstrata.config.mjs");
 let userProvidedConfig;
 
 try {
-userProvidedConfig = await import(pathToFileURL(pathToFile).href);
+    userProvidedConfig = await import(pathToFileURL(pathToFile).href);
 
-if (isWin) {
-    console.log(chalk.blue("Loading twstrata.config.mjs..."), pathToFileURL(pathToFile).href);
-    userProvidedConfig = await import(pathToFileURL(path.join(process.cwd(), "twstrata.config.mjs")).href);
-}
-else {
-    console.log(chalk.blue("Loading twstrata.config.mjs..."), pathToFile);
-    userProvidedConfig = await import(pathToFile);
-}
+    if (isWin) {
+        console.log(chalk.blue("Loading twstrata.config.mjs..."), pathToFileURL(pathToFile).href);
+        userProvidedConfig = await import(pathToFileURL(path.join(process.cwd(), "twstrata.config.mjs")).href);
+    }
+    else {
+        console.log(chalk.blue("Loading twstrata.config.mjs..."), pathToFile);
+        userProvidedConfig = await import(pathToFile);
+    }
 } catch (e) {
     console.log(chalk.red("No twstrata.config.mjs file found. Using defaults."));
 }
@@ -39,9 +39,10 @@ else {
 const defaultSourceDir = "tw";
 const defaultGlobalCSSName = "theme";
 const defaultCriticalCSSName = "critical";
-const defaultViewFiles = "./**/*.html;./**/*.liquid;./**/*.cshtml";
+const defaultViewFiles = ["views/**/*.html", "views/**/*.liquid", "views/**/*.cshtml"];
 const defaultOutDir = "dist";
 const defaultRegexMap = {
+    html: /<!--\s*@useCSS:\s*([\w\-./\\]+(?:\.css)?)?\s*-->/i,
     cshtml: /@\*\s*@useCSS:\s*([\w\-./\\]+(?:\.css)?)?\s*\*@/i,
     liquid: /{%\s*comment\s*%}\s*@useCSS:\s*([\w\-.\/\\]+(?:\.css)?)?\s*{%\s*endcomment\s*%}/i,
 };
@@ -71,6 +72,9 @@ export default function getConfig(key) {
             if (!userProvidedConfig?.views) {
                 console.log(chalk.yellow(`build.config.mjs did not provide views. Using default of '${defaultViewFiles}'`));
                 return defaultViewFiles
+            }
+            if (typeof userProvidedConfig.views === "string") {
+                return [userProvidedConfig.views];
             }
             return userProvidedConfig.views;
         case "outDir":
