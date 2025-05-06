@@ -132,7 +132,7 @@ async function getFileMap() {
             try {
                 var files = await fs.readdir(sources);
                 files.forEach((file) => {
-                    const fileName = path.basename(file, '.css').toLowerCase();
+                    const fileName = path.basename(file, '.css');
                     if (fileName !== globalCSSName && fileName !== criticalCSSName) {
                         filesMap[fileName] = [];
                     }
@@ -151,7 +151,7 @@ async function getFileMap() {
     // Process each file to find custom CSS references
     await Promise.all(
         viewFiles.map(async (file) => {
-            const fileExt = path.extname(file).toLowerCase().slice(1);
+            const fileExt = path.extname(file).slice(1);
 
             const regex = regexMap[fileExt];
             if (!regex) {
