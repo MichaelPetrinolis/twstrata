@@ -414,7 +414,7 @@ async function updateVSCodeSettings() {
             views = [];
         }
 
-        configFile[key] = [cssFile, ...views];
+        configFile[cssFile] = [cssFile, ...views];
     });
 
     const configuration = {
