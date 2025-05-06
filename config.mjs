@@ -11,6 +11,7 @@ import process from "node:process";
  * @property {string} [views]             - glob that defines the views.
  * @property {string} [globalCSSName]     - The name of the file that contains global css rules.
  * @property {string} [criticalCSSName]   - The name of the file that contains critical css rules.
+ * @property {string} [criticalCSSOutput] - The path to save the critical css rules.
  * @property {object} [regexMapOverrides] - An object map to override the default regex per extension.
  */
 
@@ -95,6 +96,12 @@ export default function getConfig(key) {
                 return defaultCriticalCSSName;
             }
             return userProvidedConfig.criticalCSSName;
+        case "criticalCSSOutput":
+            if (userProvidedConfig?.criticalCSSOutput) {
+                console.log(chalk.yellow(`build.config.mjs defines '${userProvidedConfig.criticalCSSOutput}' as the file to save the critical css rules.`));
+                return userProvidedConfig.criticalCSSOutput;
+            }
+            return null;
     }
     console.log(chalk.yellow("Key not found in build.config.mjs"), key);
     return;

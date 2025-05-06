@@ -118,7 +118,7 @@ async function buildAll() {
 
 async function getFileMap() {
     console.log(chalk.blue("Loading fileMap..."));
-    console.log(chalk.blue("Views: ", views));
+    console.log(chalk.blue("View sources: ", views));
 
     const filesMap = {
         [globalCSSName]: [],
@@ -229,7 +229,7 @@ async function generateCSSContents(cssFile) {
         return null;
     }
 
-    console.log(chalk.blue(`Processing ${cssFile} CSS, with ${sourceFiles?.length === 0 ? 'no sources' : 'sources: ' + sourceFiles.join(' , ')}`));
+    console.log(chalk.blue(`Processing '${cssFile}' - ${sourceFiles?.length === 0 ? 'no sources' : 'sources: ' + sourceFiles.join(' , ')}`));
 
     const sourceCSSPath = path.normalize(path.join(sourceDir, cssFile + ".css"));
 
@@ -248,7 +248,7 @@ ${inputCSS}
             result.warnings().forEach((warning) => console.warn(warning.toString()));
         }
 
-        console.log(chalk.blue(`${cssFile} CSS generated successfully.`));
+        console.log(chalk.blue(`'${cssFile}' generated successfully.`));
         pruneSources(result.root);
 
         return result;
@@ -285,10 +285,15 @@ ${inputCSS}
 }
 
 async function createOutputCSSFile(cssFile, css) {
-    const outputPath = path.join(outDir, path.normalize(cssFile + ".css"));
+    let customOutputPath = null;
+    if (cssFile === criticalCSSName) {
+        customOutputPath = config('criticalCSSOutput');
+    }
+    let outputPath = customOutputPath ?? path.join(outDir, path.normalize(cssFile + ".css"));
+
     await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, css, "utf-8");
-    console.log(chalk.green(`Generated CSS file: ${outputPath}`));
+    console.log(chalk.green(`'${cssFile}' -> ${outputPath}`));
     return outputPath;
 }
 

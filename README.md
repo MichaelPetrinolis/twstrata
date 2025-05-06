@@ -79,6 +79,11 @@ The `UserProvidedConfig` object allows you to customize the generation and handl
 - **Type:** `string`  
 - **Description:** The filename for the critical CSS rules file. This file should contain essential styles required for above-the-fold content to optimize page load speed.
 
+#### `criticalCSSOutput` (optional)
+
+- **Type:** `string`  
+- **Description:** If defined, the critical css will be saved to the specified file. So for example, you can import the contents of that file inline in your layout.
+
 #### `regexMapOverrides` (optional)
 
 - **Type:** `object`  
