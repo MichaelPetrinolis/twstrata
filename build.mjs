@@ -401,7 +401,8 @@ async function updateVSCodeSettings() {
     const configFile = {};
     Object.keys(filesMap).forEach(key => {
         const relativePath = path.dirname(path.dirname(settingsPath));
-        const cssFile = `${path.posix.normalize((path.posix.join(path.basename(__workDir), sourceDir, path.basename(key) + ".css")))}`;
+        const absoluteCssPath = path.normalize((path.join(__workDir, sourceDir, path.basename(key) + ".css")));
+        const cssFile = `${path.relative(relativePath, absoluteCssPath)}`.replaceAll(path.win32.sep, path.posix.sep);
         let views = filesMap[key];
 
         if (Array.isArray(views) && views.length > 0) {
