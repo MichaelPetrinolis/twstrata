@@ -132,9 +132,12 @@ async function getFileMap() {
             try {
                 var files = await fs.readdir(sources);
                 files.forEach((file) => {
-                    const fileName = path.basename(file, '.css');
-                    if (fileName !== globalCSSName && fileName !== criticalCSSName) {
-                        filesMap[fileName] = [];
+                    if (path.extname(file) === ".css") {
+                        if (file === globalCSSName || file === criticalCSSName) return;
+                        const fileName = path.basename(file, '.css');
+                        if (fileName !== globalCSSName && fileName !== criticalCSSName) {
+                            filesMap[fileName] = [];
+                        }
                     }
                 });
             }
