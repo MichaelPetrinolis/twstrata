@@ -207,7 +207,7 @@ async function createSourceCSSFileIfNotExist(filePath) {
             if (cssName === globalCSSName) {
                 fileContent += `@reference "./${criticalCSSName}.css";\r\n`;
             } else if (path.basename(filePath, '.css') != criticalCSSName) {
-                fileContent += `@reference "${globalCSSName}.css"\r\n`;
+                fileContent += `@reference "./${globalCSSName}.css";\r\n`;
             }
 
             await fs.writeFile(filePath, fileContent, "utf-8");
