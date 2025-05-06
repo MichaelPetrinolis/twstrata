@@ -233,9 +233,9 @@ async function generateCSSContents(cssFile) {
     const inputCSS = await fs.readFile(sourceCSSPath, "utf-8");
 
     const inputCSSWithSources = `
-    ${inputCSS}
-    ${sourceFiles.map((file) => `@source "${file}";`).join("\r\n")}
-    `;
+${sourceFiles.map((file) => `@source "${file}";`).join("\r\n")}    
+${inputCSS}
+`;
 
     try {
         const result = await postcss([tailwindcss, autoprefixer]).process(inputCSSWithSources, { from: sourceCSSPath });
