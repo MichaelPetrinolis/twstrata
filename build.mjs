@@ -290,7 +290,9 @@ ${inputCSS}
 }
 
 async function createOutputCSSFile(cssFile, css) {
-    let outputPath = criticalCSSOutput ?? path.join(outDir, path.normalize(cssFile + ".css"));
+    let outputPath = criticalCSSName && criticalCSSOutput 
+        ? criticalCSSOutput 
+        : path.join(outDir, path.normalize(cssFile + ".css"));
 
     await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, css, "utf-8");
