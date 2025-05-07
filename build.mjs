@@ -26,6 +26,7 @@ const views = config('views');
 const outDir = config('outDir');
 const globalCSSName = path.basename(config('globalCSSName'), '.css');
 const criticalCSSName = path.basename(config('criticalCSSName'), '.css');
+const criticalCSSOutput = config('criticalCSSOutput');
 
 console.log(chalk.green("Source dir: ", sourceDir));
 console.log(chalk.green("View files: ", views));
@@ -44,6 +45,10 @@ if (task === "watch") {
             console.log(`File updated: ${filePath}`);
         } else if (eventType === "remove") {
             console.log(`File removed: ${filePath}`);
+        }
+        if (criticalCSSOutput && path.normalize(filePath) === path.normalize(criticalCSSOutput)) {
+            console.log(chalk.yellow(`File ${filePath} matches criticalCSSOutput. Skipping build.`));
+            return;
         }
         await buildAll(); // Trigger the build process
     });
@@ -285,11 +290,7 @@ ${inputCSS}
 }
 
 async function createOutputCSSFile(cssFile, css) {
-    let customOutputPath = null;
-    if (cssFile === criticalCSSName) {
-        customOutputPath = config('criticalCSSOutput');
-    }
-    let outputPath = customOutputPath ?? path.join(outDir, path.normalize(cssFile + ".css"));
+    let outputPath = criticalCSSOutput ?? path.join(outDir, path.normalize(cssFile + ".css"));
 
     await fs.mkdir(path.dirname(outputPath), { recursive: true });
     await fs.writeFile(outputPath, css, "utf-8");
