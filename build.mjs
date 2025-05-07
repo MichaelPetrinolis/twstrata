@@ -290,7 +290,7 @@ ${inputCSS}
 }
 
 async function createOutputCSSFile(cssFile, css) {
-    let outputPath = criticalCSSName && criticalCSSOutput 
+    let outputPath = cssFile === criticalCSSName && criticalCSSOutput
         ? criticalCSSOutput 
         : path.join(outDir, path.normalize(cssFile + ".css"));
 
