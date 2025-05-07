@@ -159,8 +159,11 @@ async function getFileMap() {
     // Process each file to find custom CSS references
     await Promise.all(
         viewFiles.map(async (file) => {
-            const fileExt = path.extname(file).slice(1);
+            if (file === criticalCSSOutput) {
+                return;
+            }
 
+            const fileExt = path.extname(file).slice(1);
             const regex = regexMap[fileExt];
             if (!regex) {
                 console.error(`Unsupported file type: ${fileExt}`);
