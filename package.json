@@ -12,6 +12,7 @@
     "@tailwindcss/postcss": "^4.1.5",
     "autoprefixer": "^10.4.21",
     "chalk": "^5.4.1",
+    "chokidar": "^3.6.0",
     "fast-glob": "^3.3.3",
     "minimist": "^1.2.8",
     "node-watch": "^0.7.4",

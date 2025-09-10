@@ -10,7 +10,7 @@ import postcss from "postcss";
 import tailwindcss from "@tailwindcss/postcss";
 import autoprefixer from "autoprefixer";
 import prettyMilliseconds from 'pretty-ms';
-import watch from "node-watch";
+import chokidar from 'chokidar';
 import * as fsSync from "fs";
 
 import config from "./config.mjs";
@@ -36,25 +36,40 @@ let filesMap = {};
 if (task === "watch") {
     console.log(chalk.green("Starting watch mode..."));
 
-    // Resolve globs in views to actual file paths
-    const resolvedViewFiles = await fg(views, { onlyFiles: true });
+    const patterns = [sourceDir.replace(/\\/g, '/'), ...views];
 
-    // Watch directories and resolved files
-    watch([sourceDir, ...resolvedViewFiles], { recursive: true }, async (eventType, filePath) => {
-        if (eventType === "update") {
-            console.log(`File updated: ${filePath}`);
-        } else if (eventType === "remove") {
-            console.log(`File removed: ${filePath}`);
+    // Create chokidar watcher (ignoreInitial to avoid an initial build storm)
+    const watcher = chokidar.watch(patterns, {
+        ignoreInitial: true,
+        awaitWriteFinish: {
+            stabilityThreshold: 100,
+            pollInterval: 20
         }
-        if (criticalCSSOutput && path.normalize(filePath) === path.normalize(criticalCSSOutput)) {
-            console.log(chalk.yellow(`File ${filePath} matches criticalCSSOutput. Skipping build.`));
-            return;
-        }
-        await buildAll(); // Trigger the build process
     });
 
+    watcher.on('all', async (event, filePath) => {
+        try {
+            console.log(`${event} file ${filePath}`);
+            if (event === 'add' || event === 'unlink') {                
+                // Recompute VSCode settings when files are added or removed.
+                updateVSCodeSettings().catch(err => console.error(chalk.red("Error updating VSCode settings: ", err)));
+            }
+
+            if (criticalCSSOutput && path.normalize(filePath) === path.normalize(criticalCSSOutput)) {
+                console.log(chalk.yellow(`File ${filePath} matches criticalCSSOutput. Skipping build.`));
+                return;
+            }
+
+            await buildAll();
+        } catch (err) {
+            console.error(chalk.red("Watcher error handling file change:"), err);
+        }
+    });
+
+    watcher.on('error', err => console.error(chalk.red('Watcher encountered an error:'), err));
+
     console.log(chalk.green(`Watching for changes in: ${sourceDir} and current view files.`));
-    console.log(chalk.bgBlue.white(`If you add any files to the views, you need to restart the watch process.`));
+    console.log(chalk.bgBlue.white(`If you add any new glob patterns to 'views' restart the watch process.`));
 } else if (task === "updateVSCodeSettings") {
     console.log(chalk.green("Updating tailwindCSS VSCode intelisense settings..."));
     await updateVSCodeSettings();
@@ -438,5 +453,6 @@ async function updateVSCodeSettings() {
 
     Object.assign(settings, configuration);
     await fs.writeFile(settingsPath, JSON.stringify(settings, null, 4), "utf-8");
-    console.log(chalk.green(`Updated settings file: ${settingsPath}`));
+    console.log(chalk.magenta(`Updated settings file: ${settingsPath}`));
 }
+// End of build.mjs
