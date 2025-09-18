@@ -35,6 +35,7 @@ let filesMap = {};
 
 if (task === "watch") {
     console.log(chalk.green("Starting watch mode..."));
+    updateVSCodeSettings();
 
     const patterns = [sourceDir.replace(/\\/g, '/'), ...views];
 
@@ -448,11 +449,20 @@ async function updateVSCodeSettings() {
     });
 
     const configuration = {
-        ["tailwindCSS.experimental.configFile"]: configFile
+        ["tailwindCSS.experimental.configFile"]: sortObjectKeys(configFile)
     };
 
     Object.assign(settings, configuration);
     await fs.writeFile(settingsPath, JSON.stringify(settings, null, 4), "utf-8");
     console.log(chalk.magenta(`Updated settings file: ${settingsPath}`));
+}
+
+function sortObjectKeys(obj) {
+  return Object.keys(obj)
+    .sort()
+    .reduce((sorted, key) => {
+      sorted[key] = obj[key]; // keep original values
+      return sorted;
+    }, {});
 }
 // End of build.mjs
