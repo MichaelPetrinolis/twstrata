@@ -120,6 +120,10 @@ async function buildAll() {
             if (key === globalCSSName || key === criticalCSSName) {
                 continue;
             }
+            if (key.startsWith("_")) {
+                console.log(chalk.yellow(`Skipping file '${key}' as it starts with an underscore.`));
+                continue;
+            }
             const generatedCSS = await generateCSSContents(key);
             const root = postcss.parse(generatedCSS.css);
             removeDuplicateRules(root, globalPaths);
